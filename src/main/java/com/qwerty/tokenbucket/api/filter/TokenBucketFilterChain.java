@@ -11,6 +11,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "token-bucket", name = "enable", havingValue = "true")
 public class TokenBucketFilterChain implements Filter {
 
     private final TokenBucketProperties properties;
