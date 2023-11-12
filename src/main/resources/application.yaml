@@ -1,1 +1,7 @@
+token-bucket:
+  tokens: 2
+  refill-period-in-millis: 10000
 
+redis:
+  host-name: redis
+  port: 6379
