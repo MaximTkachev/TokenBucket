@@ -1,6 +1,7 @@
 package com.qwerty.tokenbucket.configuration;
 
 import com.qwerty.tokenbucket.configuration.property.RedisProperties;
+import com.qwerty.tokenbucket.configuration.property.TokenBucketProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -19,18 +20,21 @@ import java.util.Set;
 public class RedisConfiguration {
 
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory(RedisProperties property) {
+    public JedisConnectionFactory jedisConnectionFactory(RedisProperties properties) {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName(property.getHostName());
-        configuration.setPort(property.getPort());
+        configuration.setHostName(properties.getHostName());
+        configuration.setPort(properties.getPort());
         return new JedisConnectionFactory(configuration);
     }
 
     @Bean
-    public RedisCacheManager redisCacheManager(JedisConnectionFactory jedisConnectionFactory) {
+    public RedisCacheManager redisCacheManager(
+            TokenBucketProperties properties,
+            JedisConnectionFactory jedisConnectionFactory
+    ) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
-                .entryTtl(Duration.ofHours(2))
+                .entryTtl(Duration.ofMillis(properties.getRefillPeriodInMillis()))
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.json())
                 );
