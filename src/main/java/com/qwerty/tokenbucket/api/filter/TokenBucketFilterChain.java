@@ -48,12 +48,12 @@ public class TokenBucketFilterChain implements Filter {
         log.info("Request from ip = {} was received", remoteAddress);
 
         CacheData data = cache.get(remoteAddress, CacheData.class);
-        if (data == null || isCacheDataExpired(data)) {
-            updateCache(remoteAddress);
+        if (data == null) {
+            createCache(remoteAddress);
         } else {
             int tokens = data.getTokens();
             if (tokens <= 0) {
-                log.warn("Block request from ip = {}", remoteAddress);
+                log.warn("Request from ip = {} was blocked", remoteAddress);
                 if (servletResponse instanceof HttpServletResponse httpServletResponse) {
                     httpServletResponse.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 }
@@ -74,11 +74,7 @@ public class TokenBucketFilterChain implements Filter {
         Filter.super.destroy();
     }
 
-    private boolean isCacheDataExpired(CacheData cacheData) {
-        return System.currentTimeMillis() - cacheData.getTimestamp() > properties.getRefillPeriodInMillis();
-    }
-
-    private void updateCache(String addr) {
+    private void createCache(String addr) {
         updateCache(addr, properties.getTokens() - 1, System.currentTimeMillis());
     }
 
