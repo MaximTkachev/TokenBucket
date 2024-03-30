@@ -1,4 +1,5 @@
 token-bucket:
+  enable: true
   tokens: 2
   refill-period-in-millis: 10000
 
